@@ -28,37 +28,80 @@ def extract_movies(dom):
     - Runtime (only a number!)
     """
 
-    # ADD YOUR CODE HERE TO EXTRACT THE ABOVE INFORMATION ABOUT THE
-    # HIGHEST RATED MOVIES
-    # NOTE: FOR THIS EXERCISE YOU ARE ALLOWED (BUT NOT REQUIRED) TO IGNORE
-    # UNICODE CHARACTERS AND SIMPLY LEAVE THEM OUT OF THE OUTPUT.
-
-    titles = []
-
     # load html file
     html_file = open('movies.html', "r")
     page = BeautifulSoup(html_file.read())
 
-    # extract movie titles
+    # Extract movie titles, store in empty list
+    titles = []
     all_titles = iter(page.find_all('img'))
     next(all_titles)
     next(all_titles)
     for movie_title in all_titles:
         titles.append(movie_title.get('alt'))
 
-    
-    return []   # REPLACE THIS LINE AS WELL IF APPROPRIATE
+    # Extract movie ratings, store in empty list
+    ratings = []
+    all_ratings = iter(page.find_all('div'))
+    for rating in all_ratings:
+        if rating.get('data-value') != None:
+            ratings.append(float(rating.get('data-value')))
 
+    # Extract year of release
+    years = []
+    release_year = []
+    all_releases = page.find_all('span', attrs={'class':'lister-item-year'})
+    for release in all_releases:
+        for c in release.get_text():
+
+            # Ensure only the digits are stored in list
+            if c.isdigit():
+                years.append(c)
+
+    # Combine the digits of the years
+    for i in range(0, len(years), 4):
+        release_year.append(int(years[i] + years[i+1] + years[i+2] + years[i+3]))
+
+    # Extract actors and actresses
+    total_actors = []
+    actors_movie = []
+
+    all_actors = page.find_all('a')
+    for actor in all_actors:
+        if "adv_li_st_" in actor.get('href'):
+            actors_movie.append(actor.get_text())
+
+    # Combine actors for each movie together in a list
+    for i in range(0, len(actors_movie), 4):
+        total_actors.append([actors_movie[i], actors_movie[i+1], actors_movie[i+2] ,actors_movie[i+3]])
+
+    # Insert None for movie with no actors provided
+    total_actors.insert(42, [None])
+
+    # Extract runtime number, store in list
+    runtimes = []
+    all_runtimes = page.find_all('span', attrs={'class':'runtime'})
+    for runtime in all_runtimes:
+        if " " in runtime.get_text():
+            splitted = runtime.get_text().split(" ")
+            runtimes.append(int(splitted[0]))
+
+    # Put all parts of movies together
+    help_list = [titles, ratings, release_year, total_actors, runtimes]
+    all_movies = []
+    for i in range(0, 49):
+        all_movies.append([part[i] for part in help_list])
+
+    return all_movies
 
 def save_csv(outfile, movies):
     """
     Output a CSV file containing highest rated movies.
     """
-    writer = csv.writer(outfile)
-    writer.writerow(['Title', 'Rating', 'Year', 'Actors', 'Runtime'])
-
-    # ADD SOME CODE OF YOURSELF HERE TO WRITE THE MOVIES TO DISK
-
+    with open('movies.csv', 'w') as outfile:
+        writer = csv.writer(outfile, delimiter=',' , quotechar=' ')
+        writer.writerow(['Title', 'Rating', 'Year', 'Actors', 'Runtime'])
+        writer.writerows(extract_movies(dom))
 
 def simple_get(url):
     """
