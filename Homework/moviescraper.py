@@ -98,7 +98,7 @@ def save_csv(outfile, movies):
     """
     Output a CSV file containing highest rated movies.
     """
-    with open('movies.csv', 'w') as outfile:
+    with open('movies2.csv', 'w') as outfile:
         writer = csv.writer(outfile, delimiter=',' , quotechar=' ')
         writer.writerow(['Title', 'Rating', 'Year', 'Actors', 'Runtime'])
         writer.writerows(extract_movies(dom))
