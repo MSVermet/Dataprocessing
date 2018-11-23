@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+
+  window.onload = function() {
+
+    // create empty list for data
+    var datapoints = []
+
+    // make chart with canvas
+    var chart = new CanvasJS.Chart("line_chart", {
+    	animationEnabled: true,
+    	theme: "light2",
+    	title: {
+    		text: "Total precipitation in 0.1 mm (-1 for <0.05 mm) at De Bilt, Netherlands"
+    	},
+    	axisY: {
+    		title: "0.1 mm",
+    		titleFontSize: 18
+    	},
+      axisX: {
+        title: "Matty Vermet, studentnumber: 11320524, Javascript Intro, http://projects.knmi.nl/klimatologie/daggegevens/selectie.cgi",
+        titleFontSize: 10
+      },
+    	data: [{
+    		type: "line",
+    		yValueFormatString: "#,### mm",
+    		dataPoints: datapoints
+    	}]
+    })
+
+    function get_data(data) {
+      // extract data for datafile, store in datapoints list
+      for (var prop in data){
+        var date = data[prop].Date;
+        var result = parseFloat(data[prop].Precipitation);
+        datapoints.push({
+          x: parse(date),
+          y: result
+        });
+      }
+
+      // visualise the chart
+      chart.render();
+    }
+
+    function parse(date) {
+    // cut date string in chunks
+    var y = date.substr(0,4),
+        m = date.substr(4,2),
+        d = date.substr(6,2);
+    // make new date and return to datapoints
+    return new Date(y,m,d);
+    }
+    console.log(datapoints);
+
+    // load in the data file, direct to function get_data
+    $.getJSON("weather_data.json", get_data);
+  }
+
+  </script>
+</head>
+<body>
+  <div id="line_chart" style="height: 300px; width: 100%;"></div>
+  <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+  <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</body>
+</html>
