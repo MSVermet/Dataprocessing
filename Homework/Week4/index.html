@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="d3/d3.v3.js"></script>
+        <style>
+          div.bar {
+            display: inline-block;
+            width: 20px;
+            height: 75px;   /* We'll override this later */
+            background-color: teal;
+          }
+        </style>
+    </head>
+    <body>
+      <div class="bar"></div>
+      <div style="height: 75px;"></div>
+        <script type="text/javascript">
+          var fileName = "ForestArea.json";
+          var txtFile = new XMLHttpRequest();
+          txtFile.onreadystatechange = function() {
+              if (txtFile.readyState === 4 && txtFile.status == 200) {
+                  var mydata = JSON.parse(txtFile.responseText);
+                  console.log(mydata);
+                  console.log(Object.keys(mydata));
+                  document.write(mydata["0"]);
+                }
+          }
+          txtFile.open("GET", fileName);
+          txtFile.send(); {}
+
+        </script>
+    </body>
+</html>
