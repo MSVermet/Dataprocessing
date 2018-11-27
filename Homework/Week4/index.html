@@ -13,21 +13,49 @@
         </style>
     </head>
     <body>
+      <p> DOE HET! </p>
       <div class="bar"></div>
       <div style="height: 75px;"></div>
         <script type="text/javascript">
-          var fileName = "ForestArea.json";
+          var fileName = "Forest.json";
           var txtFile = new XMLHttpRequest();
           txtFile.onreadystatechange = function() {
               if (txtFile.readyState === 4 && txtFile.status == 200) {
                   var mydata = JSON.parse(txtFile.responseText);
                   console.log(mydata);
-                  console.log(Object.keys(mydata));
-                  document.write(mydata["0"]);
+                  get_data(mydata);
                 }
           }
           txtFile.open("GET", fileName);
-          txtFile.send(); {}
+          txtFile.send(); {
+
+            var Argentina = [];
+            var Brazil = [];
+            var Colombia = [];
+            var Peru = [];
+            var World = [];
+
+            function get_data(data) {
+              // extract data from datafile
+              for (i = 0; i <= 25; i++) {
+                  Argentina.push(parseFloat(data[0][1990+i]));
+                  Brazil.push(parseFloat(data[1][1990+i]));
+                  Colombia.push(parseFloat(data[2][1990+i]));
+                  Peru.push(parseFloat(data[3][1990+i]));
+                  World.push(parseFloat(data[4][1990+i]));
+                }
+              for (var prop in data){
+                var Country = data[prop].Country;
+              }
+            }
+
+            d3.select("body").selectAll("p")
+              .data(Argentina)
+              .enter()
+              .append("p")
+              .text("New paragraph!");
+        }
+
 
         </script>
     </body>
