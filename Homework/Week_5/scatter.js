@@ -78,6 +78,22 @@ window.onload = function() {
       var colorScale = d3.scaleOrdinal()
                          .range(d3.schemeCategory10);
 
+     //  var colorLegendG = svg.append('g')
+     //       .attr('transform', `translate(${w + 60}, 150)`);
+     //
+     // colorLegendG.append('text')
+     //     .attr('class', 'legend-label')
+     //     .attr('x', -30)
+     //     .attr('y', -40)
+     //     .text(colorLabel);
+
+     // const colorLegend = d3.legendColor()
+     //     .scale(colorScale)
+     //     .shape('circle');
+
+     // colorLegendG.call(colorLegend)
+     //     .selectAll('.cell text')
+     //       .attr('dy', '0.1em');
       // bl.ocks.org/anonymous/7a65777a1e310b76aca5d499e967c467
 
       svg.selectAll("circle")
@@ -86,13 +102,21 @@ window.onload = function() {
          .append("circle")
          .attr('transform', 'translate('+margin.left+')')
          .attr('fill', d => colorScale(colorValue(d)))
+         //.attr("data-legend",function(d) { return d[0]})
+         .attr('fill-opacity', 0.6 )
          .attr("cx", function(d){
            return xScale(d[1]);
          })
          .attr("cy", function(d){
            return yScale(d[2])
          })
-         .attr("r", 3);
+         .attr("r", 9);
+
+     // legend = svg.append("g")
+     //             .attr("class","legend")
+     //             .attr("transform","translate(50,30)")
+     //             .style("font-size","12px")
+     //             .call(d3.legend)
 
       svg.selectAll("text")
          .data(pdata)
@@ -109,12 +133,15 @@ window.onload = function() {
            return yScale(d[2]);
          })
          .attr("font-size", "11px")
-         .attr("fill", "red");
+         .attr("fill", "black");
+
+
 
      // set scale of yaxis
      var vScale = d3.scaleLinear()
        .domain([97, d3.max(pdata, function(d) {return d[2]; })])
-       .range([h+margin.top, 0]);
+       .range([h+margin.top, 0])
+       .nice();
 
      // set yaxis values and scale
      var vAxis = d3.axisLeft()
@@ -141,7 +168,7 @@ window.onload = function() {
        var hAxis = d3.axisBottom()
          .scale(hScale)
          .tickValues(hScale.domain().filter(function(d, i){
-           return !(i % 7);
+           return !(i % 1);
          }));
 
        // apply styles to xaxis
