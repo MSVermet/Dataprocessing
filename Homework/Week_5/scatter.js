@@ -66,8 +66,8 @@ window.onload = function() {
                      .range([padding, w - padding]);
 
       var yScale = d3.scaleLinear()
-                     .domain([98, d3.max(pdata, function(d) {return d[2];})])
-                     .range([h-padding, padding]);
+                     .domain([97, d3.max(pdata, function(d) {return d[2];})])
+                     .range([h+padding, padding]);
 
       var rScale = d3.scaleLinear()
                      .domain([0, d3.max(pdata, function(d) {return d[2]; })])
@@ -100,7 +100,7 @@ window.onload = function() {
          .data(pdata)
          .enter()
          .append("circle")
-         .attr('transform', 'translate('+margin.left+')')
+         .attr('transform', 'translate('+margin.left+','+margin.top+')')
          .attr('fill', d => colorScale(colorValue(d)))
          //.attr("data-legend",function(d) { return d[0]})
          .attr('fill-opacity', 0.6 )
@@ -108,7 +108,7 @@ window.onload = function() {
            return xScale(d[1]);
          })
          .attr("cy", function(d){
-           return yScale(d[2])
+           return yScale(d[2]);
          })
          .attr("r", 9);
 
@@ -122,7 +122,7 @@ window.onload = function() {
          .data(pdata)
          .enter()
          .append("text")
-         .attr('transform', 'translate('+margin.left+')')
+         .attr('transform', 'translate('+margin.left+','+margin.top+')')
          .text(function(d){
            return d[2];
          })
@@ -140,7 +140,7 @@ window.onload = function() {
      // set scale of yaxis
      var vScale = d3.scaleLinear()
        .domain([97, d3.max(pdata, function(d) {return d[2]; })])
-       .range([h+margin.top, 0])
+       .range([h+padding, 0])
        .nice();
 
      // set yaxis values and scale
