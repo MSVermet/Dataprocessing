@@ -1,1 +1,37 @@
 /* Matty Vermet, 11320524 */
+h4 {
+     margin-top: 15px;
+     margin-left: 1.5em;
+ }
+ .country-name {
+     margin: 0 !important;
+ }
+
+ .key-dot {
+     display: inline-block;
+     height: 10px;
+     margin-right: .5em;
+     width: 10px;
+ }
+
+ .france { background: #1f77b4;
+            opacity: 0.6;}
+ .netherlands { background: #FF7F0E;
+                  opacity: 0.6;}
+ .portugal { background: #2CA02C;
+              opacity: 0.6;}
+ .germany { background: #d62728;
+              opacity: 0.6;}
+ .uk { background: #9467bd;
+        opacity: 0.6;}
+ .korea {background: #8c564b;
+            opacity: 0.6;
+ }
+
+ .legend1{
+    overflow:hidden;
+}
+.legend1 {
+    float:left;
+    margin-left: 1.5em;
+}

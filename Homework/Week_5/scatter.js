@@ -3,44 +3,52 @@ window.onload = function() {
 
   console.log('Yes, you can!')
   var consumer_confidence = "http://stats.oecd.org/SDMX-JSON/data/HH_DASH/FRA+DEU+KOR+NLD+PRT+GBR.COCONF.A/all?startTime=2007&endTime=2015"
-  var requests = [d3.json(consumer_confidence)];
+  var women_science = "http://stats.oecd.org/SDMX-JSON/data/MSTI_PUB/TH_WRXRS.FRA+DEU+KOR+NLD+PRT+GBR/all?startTime=2007&endTime=2015"
+  var requests = [d3.json(consumer_confidence), d3.json(women_science)];
   var pdata = [];
 
   Promise.all(requests).then(function(response) {
       mydata = response;
       console.log(mydata);
-      for (i=0; i < 9; i++){
+      for (i=0; i <= 8; i+=2){
         pdata.push([
           "france",
           2007 + i,
-          mydata[0].dataSets[0].series["0:0:0"].observations[i][0]
-      ]);
+          mydata[0].dataSets[0].series["0:0:0"].observations[i][0],
+          mydata[1].dataSets[0].series["0:0"].observations[i][0].toFixed(2)
+        ]);
         pdata.push([
           "netherlands",
           2007 + i,
-          mydata[0].dataSets[0].series["1:0:0"].observations[i][0]
+          mydata[0].dataSets[0].series["1:0:0"].observations[i][0],
+          mydata[1].dataSets[0].series["0:1"].observations[i][0].toFixed(2)
         ]);
         pdata.push([
           "portugal",
           2007 + i,
-          mydata[0].dataSets[0].series["2:0:0"].observations[i][0]
+          mydata[0].dataSets[0].series["2:0:0"].observations[i][0],
+          mydata[1].dataSets[0].series["0:2"].observations[i][0].toFixed(2)
         ]);
         pdata.push([
           "germany",
           2007 + i,
-          mydata[0].dataSets[0].series["3:0:0"].observations[i][0]
+          mydata[0].dataSets[0].series["3:0:0"].observations[i][0],
+          mydata[1].dataSets[0].series["0:3"].observations[i][0].toFixed(2)
         ]);
         pdata.push([
           "uk",
           2007 + i,
-          mydata[0].dataSets[0].series["4:0:0"].observations[i][0]
+          mydata[0].dataSets[0].series["4:0:0"].observations[i][0],
+          mydata[1].dataSets[0].series["0:4"].observations[i][0].toFixed(2)
         ]);
         pdata.push([
           "korea",
           2007 + i,
-          mydata[0].dataSets[0].series["5:0:0"].observations[i][0]
+          mydata[0].dataSets[0].series["5:0:0"].observations[i][0],
+          mydata[1].dataSets[0].series["0:5"].observations[i][0].toFixed(2)
         ]);
       };
+
       console.log(pdata);
 
       // set display margins
@@ -78,25 +86,9 @@ window.onload = function() {
       var colorScale = d3.scaleOrdinal()
                          .range(d3.schemeCategory10);
 
-     //  var colorLegendG = svg.append('g')
-     //       .attr('transform', `translate(${w + 60}, 150)`);
-     //
-     // colorLegendG.append('text')
-     //     .attr('class', 'legend-label')
-     //     .attr('x', -30)
-     //     .attr('y', -40)
-     //     .text(colorLabel);
-
-     // const colorLegend = d3.legendColor()
-     //     .scale(colorScale)
-     //     .shape('circle');
-
-     // colorLegendG.call(colorLegend)
-     //     .selectAll('.cell text')
-     //       .attr('dy', '0.1em');
       // bl.ocks.org/anonymous/7a65777a1e310b76aca5d499e967c467
 
-      svg.selectAll("circle")
+      var myChart = svg.selectAll("circle")
          .data(pdata)
          .enter()
          .append("circle")
@@ -112,11 +104,6 @@ window.onload = function() {
          })
          .attr("r", 9);
 
-     // legend = svg.append("g")
-     //             .attr("class","legend")
-     //             .attr("transform","translate(50,30)")
-     //             .style("font-size","12px")
-     //             .call(d3.legend)
 
       svg.selectAll("text")
          .data(pdata)
@@ -158,7 +145,7 @@ window.onload = function() {
            .style('fill', 'none')
            .style('stroke', '#999')
          vGuide.selectAll('line')
-           .style('stroke', '#999')
+           .style('stroke', '#999');
 
      var hScale = d3.scaleBand()
        .domain(d3.range(2007, 2016))
@@ -180,7 +167,11 @@ window.onload = function() {
              .style('fill', 'none')
              .style('stroke', '#999')
            hGuide.selectAll('line')
-             .style('stroke', '#999')
+             .style('stroke', '#999');
+
+
+
+
 
 
   }).catch(function(e){
