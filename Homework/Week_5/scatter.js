@@ -72,6 +72,38 @@ window.onload = function() {
           pdata15.push(pdata[j]);
         }
       }
+      // calculate mean of data
+      x_mean = 0;
+      y_mean = 0;
+      for (var k=0; k<pdata07.length; k++){
+        x_mean += parseFloat(pdata07[k][3]);
+        y_mean += pdata07[k][2];
+      }
+      x_mean /= 6;
+      y_mean /= 6;
+
+      // calculate coefficients
+      var xr = 0;
+      var yr = 0;
+      var term1 = 0;
+      var term2 = 0;
+      for (i=0; i<pdata07.length; i++){
+        xr = parseFloat(pdata07[i][3]) - x_mean;
+        yr = pdata07[i][2] - y_mean;
+        term1 += xr * yr;
+        term2 += xr * xr;
+      }
+      var b1 = term1 / term2;
+      var b0 = y_mean - (b1 * x_mean);
+
+      reg = [];
+      for (i=0; i < pdata07.length; i++){
+        reg.push(b0 + (pdata07[i][2] * b1));
+      }
+
+      for (i=0; i < reg.length; i++){
+        pdata07[i].push(reg[i]);
+      }
 
       console.log(pdata07);
 
@@ -92,7 +124,7 @@ window.onload = function() {
       var svg = d3.select("body")
                   .append("svg")
                   .attr("width", 600+padding)
-                  .attr("height", 500+padding);  
+                  .attr("height", 500+padding);
 
 
       var xScale = d3.scaleLinear()
@@ -126,6 +158,29 @@ window.onload = function() {
            return yScale(d[2]);
          })
          .attr("r", 9);
+
+     var x1Buffer = pdata07[0][4];
+     var x2Buffer = pdata07[5][4];
+     var y1Buffer = pdata07[0][3];
+     var y2Buffer = pdata07[5][3];
+     console.log(pdata07[0][4])
+     console.log(pdata07[5][4])
+
+     var line = svg.append("line")
+         .attr("x1", parseFloat(x1Buffer) - padding)
+         .attr("y1", padding + margin.top + (parseFloat(y1Buffer) * 1.6))
+         .attr("x2", w + parseFloat(x2Buffer) - padding - margin.right)
+         .attr("y2", padding + margin.top + (parseFloat(y2Buffer) * 1.6))
+         .attr("stroke-width", 4)
+         .attr("stroke", "lightgrey");
+
+
+      // var regression = d3.line()
+      //    .x(function(d) { return d[3]})
+      //    .y(function(d) { return d[4]});
+      //
+      // xScale.domain(d3.extent(pdata07, function(d) {return d[3]}));
+      // yScale.domain(d3.extent(pdata07, function(d) {return d[2]}));
 
       svg.append("text")
          .attr("class", "xtext")
@@ -253,6 +308,58 @@ window.onload = function() {
             .attr('fill', d => colorScale(colorValue(d)))
             .attr('fill-opacity', 0.6 )
             .attr("r", 9);
+
+            // svg.selectAll("line")
+            //   .remove()
+            // // line.enter()
+            // //     .append("line")
+            // //     .attr("stroke", "lightgrey")
+            // //     .attr("stroke-width", 3);
+            //
+            // // calculate mean of data
+            // x_mean = 0;
+            // y_mean = 0;
+            // for (var k=0; k<dataset.length; k++){
+            //   x_mean += parseFloat(dataset[k][3]);
+            //   y_mean += dataset[k][2];
+            // }
+            // x_mean /= 6;
+            // y_mean /= 6;
+            //
+            // // calculate coefficients
+            // var xr = 0;
+            // var yr = 0;
+            // var term1 = 0;
+            // var term2 = 0;
+            // for (i=0; i<dataset.length; i++){
+            //   xr = parseFloat(dataset[i][3]) - x_mean;
+            //   yr = dataset[i][2] - y_mean;
+            //   term1 += xr * yr;
+            //   term2 += xr * xr;
+            // }
+            // var b1 = term1 / term2;
+            // var b0 = y_mean - (b1 * x_mean);
+            //
+            // reg = [];
+            // for (i=0; i < dataset.length; i++){
+            //   reg.push(b0 + (dataset[i][2] * b1));
+            // }
+            //
+            // for (i=0; i < reg.length; i++){
+            //   dataset[i].push(reg[i]);
+            // }
+            // var x1 = dataset[0][4];
+            // var x2 = dataset[5][4];
+            // var y1 = dataset[0][3];
+            // var y2 = dataset[5][3];
+
+            // var line = svg.append("line")
+            //     .attr("x1", parseFloat(x1) - padding)
+            //     .attr("y1", padding + margin.top + (parseFloat(y1) * 1.6))
+            //     .attr("x2", w + parseFloat(x2) - padding - margin.right)
+            //     .attr("y2", padding + margin.top + (parseFloat(y2) * 1.6))
+            //     .attr("stroke-width", 4)
+            //     .attr("stroke", "lightgrey");
 
             myChart.transition()
                    .duration(700)
