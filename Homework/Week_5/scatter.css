@@ -1,7 +1,17 @@
-/* Matty Vermet, 11320524 */
+/* Matty Vermet, 11320524
+   Minor Programeren 2018
+   Dataprocessing*/
+h1 {
+  margin-bottom: 4px;
+}
+h3 {
+  margin-top: 4px;
+}
 h4 {
-     margin-top: 15px;
+     margin-top: 10px;
      margin-left: 1.5em;
+     margin-bottom: 1px;
+     color: grey;
  }
  .country-name {
      margin: 0 !important;
@@ -53,6 +63,7 @@ h4 {
 .legend1 {
     float:left;
     margin-left: 1.5em;
+    color: grey;
 }
 
 .dropbtn {
@@ -66,6 +77,7 @@ h4 {
 .dropdown{
   float: right;
   position: relative;
+  margin-right: 20em;
   display: inline-block;
 }
 

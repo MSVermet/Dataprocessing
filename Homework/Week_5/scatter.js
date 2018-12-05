@@ -1,4 +1,7 @@
 // Matty Vermet, 11320524
+// Minor Programeren 2018
+// Dataprocessing
+
 window.onload = function() {
 
   console.log('Yes, you can!')
@@ -15,6 +18,8 @@ window.onload = function() {
   Promise.all(requests).then(function(response) {
       mydata = response;
       console.log(mydata);
+
+      // extract data from datafile
       for (i=0; i <= 8; i+=2){
         pdata.push([
           "france",
@@ -72,40 +77,6 @@ window.onload = function() {
           pdata15.push(pdata[j]);
         }
       }
-      // calculate mean of data
-      x_mean = 0;
-      y_mean = 0;
-      for (var k=0; k<pdata07.length; k++){
-        x_mean += parseFloat(pdata07[k][3]);
-        y_mean += pdata07[k][2];
-      }
-      x_mean /= 6;
-      y_mean /= 6;
-
-      // calculate coefficients
-      var xr = 0;
-      var yr = 0;
-      var term1 = 0;
-      var term2 = 0;
-      for (i=0; i<pdata07.length; i++){
-        xr = parseFloat(pdata07[i][3]) - x_mean;
-        yr = pdata07[i][2] - y_mean;
-        term1 += xr * yr;
-        term2 += xr * xr;
-      }
-      var b1 = term1 / term2;
-      var b0 = y_mean - (b1 * x_mean);
-
-      reg = [];
-      for (i=0; i < pdata07.length; i++){
-        reg.push(b0 + (pdata07[i][2] * b1));
-      }
-
-      for (i=0; i < reg.length; i++){
-        pdata07[i].push(reg[i]);
-      }
-
-      console.log(pdata07);
 
       // set display margins
       var margin = {
@@ -120,13 +91,13 @@ window.onload = function() {
       var w = 600 - margin.right - margin.left;
       var padding = 30;
 
-
+      // create new svg
       var svg = d3.select("body")
                   .append("svg")
                   .attr("width", 600+padding)
                   .attr("height", 500+padding);
 
-
+      // set scales for plot
       var xScale = d3.scaleLinear()
                      .domain(d3.extent(pdata07, function(d) {return d[3]}))
                      .range([padding, w - padding]);
@@ -135,26 +106,24 @@ window.onload = function() {
                      .domain([97, d3.max(pdata07, function(d) {return d[2];})])
                      .range([h+padding, padding]);
 
-
+      // set colors for circles
       var colorValue = d => d[0];
       var colorLabel = 'Countries';
       var colorScale = d3.scaleOrdinal()
                          .range(d3.schemeCategory10);
 
+      // create tooltip
       var tooltip = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
 
-
-      // bl.ocks.org/anonymous/7a65777a1e310b76aca5d499e967c467
-
+      // add circles to svg to make scatterplot
       var myChart = svg.selectAll("circle")
          .data(pdata07)
          .enter()
          .append("circle")
          .attr('transform', 'translate('+margin.left+','+margin.top+')')
          .attr('fill', d => colorScale(colorValue(d)))
-         //.attr("data-legend",function(d) { return d[0]})
          .attr('fill-opacity', 0.6 )
          .attr("cx", function(d){
            return xScale(d[3]);
@@ -163,6 +132,8 @@ window.onload = function() {
            return yScale(d[2]);
          })
          .attr("r", 20)
+
+         // set tooltip settings/attributes
          .on('mouseover', function(d){
            tooltip.transition()
              .duration(200)
@@ -179,29 +150,7 @@ window.onload = function() {
            d3.select(this).style('opacity', 1)
          })
 
-     var x1Buffer = pdata07[0][4];
-     var x2Buffer = pdata07[5][4];
-     var y1Buffer = pdata07[0][3];
-     var y2Buffer = pdata07[5][3];
-     console.log(pdata07[0][4])
-     console.log(pdata07[5][4])
-
-     var line = svg.append("line")
-         .attr("x1", parseFloat(x1Buffer) - padding)
-         .attr("y1", padding + margin.top + (parseFloat(y1Buffer) * 1.6))
-         .attr("x2", w + parseFloat(x2Buffer) - padding - margin.right)
-         .attr("y2", padding + margin.top + (parseFloat(y2Buffer) * 1.6))
-         .attr("stroke-width", 4)
-         .attr("stroke", "lightgrey");
-
-
-      // var regression = d3.line()
-      //    .x(function(d) { return d[3]})
-      //    .y(function(d) { return d[4]});
-      //
-      // xScale.domain(d3.extent(pdata07, function(d) {return d[3]}));
-      // yScale.domain(d3.extent(pdata07, function(d) {return d[2]}));
-
+      // apply axis labels
       svg.append("text")
          .attr("class", "xtext")
          .attr("x",w/2 +20)
@@ -217,26 +166,7 @@ window.onload = function() {
          .attr("x", -20-(h/2))
          .attr("dy","1em")
          .attr("font-size", "13px")
-         .text("Consumer confidence index")
-
-      // svg.selectAll("text")
-      //    .data(pdata07)
-      //    .enter()
-      //    .append("text")
-      //    .attr('transform', 'translate('+margin.left+','+margin.top+')')
-      //    .text(function(d){
-      //      return d[3] + ", " + d[2];
-      //    })
-      //    .attr("x", function(d) {
-      //      return xScale(d[3]);
-      //    })
-      //    .attr("y", function(d) {
-      //      return yScale(d[2]);
-      //    })
-      //    .attr("font-size", "11px")
-      //    .attr("fill", "black");
-
-
+         .text("Consumer confidence index");
 
      // set scale of yaxis
      var vScale = d3.scaleLinear()
@@ -268,7 +198,6 @@ window.onload = function() {
        // set xaxis values and scale
        var hAxis = d3.axisBottom(hScale);
 
-
        // apply styles to xaxis
        var hGuide = d3.select('svg')
          .append('g')
@@ -280,10 +209,14 @@ window.onload = function() {
            hGuide.selectAll('line')
              .style('stroke', '#999');
 
+
+
+        // Change dataset looking at years
         d3.selectAll(".m")
           .on("click", function() {
             var date = this.getAttribute("value");
 
+            // if matching year is clicked on, change dataset
             var dataset;
             if (date == "2007"){
               dataset = pdata07;
@@ -297,27 +230,24 @@ window.onload = function() {
               dataset = pdata15;
             }
 
+            // Change scales for new dataset
             xScale.domain(d3.extent(dataset, function(d) {return d[3]}))
             .range([padding, w - padding]);
             yScale.domain([97, d3.max(dataset, function(d) {return d[2];})])
             .range([h+padding, padding]);
-
             hScale.domain(d3.extent(dataset, function(d) { return d[3]}))
               .range([0, w]);
-
-            hAxis.scale(hScale)
-              .tickValues(hScale.domain().filter(function(d, i){
-                return !(i % 0);
-              }));
-
             vScale.domain([97, d3.max(dataset, function(d) {return d[2]; })])
               .range([h+padding, 0])
               .nice();
 
+            // change axis
+            hAxis.scale(hScale);
             vAxis.scale(vScale)
               .ticks(10)
               .tickPadding(5);
 
+            // select chart enter new circles
             myChart = svg.selectAll("circle")
                         .data(dataset)
             myChart.enter()
@@ -326,58 +256,7 @@ window.onload = function() {
             .attr('fill-opacity', 0.6 )
             .attr("r", 9);
 
-            // svg.selectAll("line")
-            //   .remove()
-            // // line.enter()
-            // //     .append("line")
-            // //     .attr("stroke", "lightgrey")
-            // //     .attr("stroke-width", 3);
-            //
-            // // calculate mean of data
-            // x_mean = 0;
-            // y_mean = 0;
-            // for (var k=0; k<dataset.length; k++){
-            //   x_mean += parseFloat(dataset[k][3]);
-            //   y_mean += dataset[k][2];
-            // }
-            // x_mean /= 6;
-            // y_mean /= 6;
-            //
-            // // calculate coefficients
-            // var xr = 0;
-            // var yr = 0;
-            // var term1 = 0;
-            // var term2 = 0;
-            // for (i=0; i<dataset.length; i++){
-            //   xr = parseFloat(dataset[i][3]) - x_mean;
-            //   yr = dataset[i][2] - y_mean;
-            //   term1 += xr * yr;
-            //   term2 += xr * xr;
-            // }
-            // var b1 = term1 / term2;
-            // var b0 = y_mean - (b1 * x_mean);
-            //
-            // reg = [];
-            // for (i=0; i < dataset.length; i++){
-            //   reg.push(b0 + (dataset[i][2] * b1));
-            // }
-            //
-            // for (i=0; i < reg.length; i++){
-            //   dataset[i].push(reg[i]);
-            // }
-            // var x1 = dataset[0][4];
-            // var x2 = dataset[5][4];
-            // var y1 = dataset[0][3];
-            // var y2 = dataset[5][3];
-
-            // var line = svg.append("line")
-            //     .attr("x1", parseFloat(x1) - padding)
-            //     .attr("y1", padding + margin.top + (parseFloat(y1) * 1.6))
-            //     .attr("x2", w + parseFloat(x2) - padding - margin.right)
-            //     .attr("y2", padding + margin.top + (parseFloat(y2) * 1.6))
-            //     .attr("stroke-width", 4)
-            //     .attr("stroke", "lightgrey");
-
+            // make transition to new circles
             myChart.transition()
                    .duration(700)
                    .ease(d3.easeLinear)
@@ -389,6 +268,7 @@ window.onload = function() {
                    })
                    .attr('fill-opacity', 0.6);
 
+            // exit old circles
             myChart.exit()
                    .transition()
                    .duration(700)
@@ -396,10 +276,6 @@ window.onload = function() {
                    .attr("cx", w)
                    .remove();
                  });
-
-
-
-
 
   }).catch(function(e){
       throw(e);
