@@ -141,6 +141,11 @@ window.onload = function() {
       var colorScale = d3.scaleOrdinal()
                          .range(d3.schemeCategory10);
 
+      var tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
+
       // bl.ocks.org/anonymous/7a65777a1e310b76aca5d499e967c467
 
       var myChart = svg.selectAll("circle")
@@ -157,7 +162,22 @@ window.onload = function() {
          .attr("cy", function(d){
            return yScale(d[2]);
          })
-         .attr("r", 9);
+         .attr("r", 20)
+         .on('mouseover', function(d){
+           tooltip.transition()
+             .duration(200)
+             .style('opacity', 0.9)
+           tooltip.html(d[3] + "<br/>" + d[2])
+             .style('left', (d3.event.pageX)+'px')
+             .style('top', (d3.event.pageY - 28)+'px')
+           d3.select(this).style('opacity', 0.5)
+         })
+         .on('mouseout', function(d){
+           tooltip.transition()
+             .duration(500)
+             .style('opacity', 0)
+           d3.select(this).style('opacity', 1)
+         })
 
      var x1Buffer = pdata07[0][4];
      var x2Buffer = pdata07[5][4];
@@ -246,11 +266,8 @@ window.onload = function() {
        .range([0, w]);
 
        // set xaxis values and scale
-       var hAxis = d3.axisBottom()
-         .scale(hScale)
-         .tickValues(hScale.domain().filter(function(d, i){
-           return !(i % 0);
-         }));
+       var hAxis = d3.axisBottom(hScale);
+
 
        // apply styles to xaxis
        var hGuide = d3.select('svg')
