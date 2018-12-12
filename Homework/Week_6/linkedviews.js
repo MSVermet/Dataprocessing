@@ -81,13 +81,39 @@ window.onload = function() {
               .style("stroke","white")
               .style('stroke-width', 0.3)
               .on("click", function(d){
+
+                d3.select("#chart > *").remove();
+
                 var data = [];
-                data.push((d.Average_life_exp/10).toFixed(2), d.Average_wellbeing, d.Footprint);
-                make_barchart(data);
+                data.push({name: d.properties.name, value: (d.Average_life_exp/10).toFixed(2)},{name: d.properties.name, value: d.Average_wellbeing},{name: d.properties.name, value: d.Footprint});
+
+                // Look for countries without information
+                if (d.Average_life_exp === undefined){
+                  console.log("nope");
+                  var empty = d3.select("#chart").append("svg")
+                                   .attr("width", 300 + 20 + 20)
+                                   .attr("height", 100 + 20 + 30);
+                  empty.append("text")
+                      .attr("x", 60)
+                      .attr("y", 45)
+                      .attr("text-anchor", "middle")
+                      .style("font-family", "sans-sherif")
+                      .style("font-size", "20px")
+                      .style("font-weight", "bold")
+                      .text(d.properties.name)
+                  empty.append("text")
+                       .attr("x", 60)
+                       .attr("y", 80)
+                       .style("font-size", "16px")
+                       .style("font-weight", "bold")
+                       .style("fill", "darkOrange")
+                       .text("No information available")
+                }
+                else{make_barchart(data)};
                })
+
               .on('mouseover',function(d){
                 tip.show(d);
-
 
                 d3.select(this)
                   .style("opacity", 1)
@@ -120,7 +146,7 @@ window.onload = function() {
           var padding = 20;
 
           var colors = d3.scaleLinear()
-                        .domain([0,data.length])
+                        .domain([0, 3])
                         .range(['#77b7ea', '#705f7f']);
 
           var tooltip = d3.select("body").append("div")
@@ -136,110 +162,58 @@ window.onload = function() {
           console.log(data)
           var barchart = d3.select("#chart").append("svg")
                            .attr("width", w + margin.right + margin.left)
-                           .attr("height", h + margin.top + margin.bottom)
-                           .append('g')
-                           .attr('transform', 'translate('+margin.left+','+margin.top+')')
-                           .selectAll("rect")
-                            .data(data)
-                            .enter()
-                            .append("rect")
-                            .attr("width", w / 3 - 2)
-                            .attr("height", function(d){
-                              return d * 8;
-                            })
-                            .attr("x", function(d, i) {
-                              return i * (w / 3);
-                            })
-                            .attr("y", function(d){
-                              return h - (d *8);
-                            })
-                            .attr("fill", function(d,i) {
-                                return colors(i);
-                            })
-                            // set tooltip for barchart
-                            .on('mouseover', function(d){
-                              tooltip.transition()
-                                .duration(200)
-                                .style('opacity', 0.9)
-                              tooltip.html(d)
-                                .style('left', (d3.event.pageX)+'px')
-                                .style('top', (d3.event.pageY+'px'))
-                              d3.select(this).style('opacity', 0.5)
-                            })
-                            .on('mouseout', function(d){
-                              tooltip.transition()
-                                .duration(500)
-                                .style('opacity', 0)
-                              d3.select(this).style('opacity', 1)
-                            });
+                           .attr("height", h + margin.top + margin.bottom);
 
+              barchart.append('g')
+                       .attr('transform', 'translate('+margin.left+','+margin.top+')')
+                       .selectAll("rect")
+                        .data(data)
+                        .enter()
+                        .append("rect")
+                        .attr("width", w / 3 - 2)
+                        .attr("height", function(d){
+                          return d.value * 10;
+                        })
+                        .attr("x", function(d, i) {
+                          return i * (w / 3);
+                        })
+                        .attr("y", function(d){
+                          return h - (d.value *10);
+                        })
+                        .attr("fill", function(d,i) {
+                            return colors(i);
+                        })
+                        // set tooltip for barchart
+                        .on('mouseover', function(d){
+                          tooltip.transition()
+                            .duration(200)
+                            .style('opacity', 0.9)
+                          tooltip.html(d.value)
+                            .style('left', (d3.event.pageX)+'px')
+                            .style('top', (d3.event.pageY+'px'))
+                          d3.select(this).style('opacity', 0.5)
+                        })
+                        .on('mouseout', function(d){
+                          tooltip.transition()
+                            .duration(500)
+                            .style('opacity', 0)
+                          d3.select(this).style('opacity', 1)
+                        });
 
-                  d3.select("#chart")
-                    .on("click", function() {
-
-                      d3.select("#chart > *").remove();
-
-                    })
-
-
-
-
-
-
-        }
+                barchart.append("text")
+                      .data(data)
+                      .attr("x", 60)
+                      .attr("y", 35)
+                      .attr("text-anchor", "middle")
+                      .style("font-family", "sans-sherif")
+                      .style("font-size", "20px")
+                      .style("font-weight", "bold")
+                      .text(function(d){
+                        return d.name;
+                      });
+      }
 
         };
-        var LifebyCountry = {};
-        HappyPlanet.forEach(function(d) { LifebyCountry[d.name] = +d.Average_life_exp; });
-        data.features.forEach(function(d) { d.Average_life_exp = LifebyCountry[d.properties.name]});
-        console.log(data);
-
-
-
-
-
-
-
-        // var xScale =  d3.scaleBand()
-        //   .domain(d3.range(0, 177))
-        //   .range([0, width])
-        //
-        // var yScale = d3.scaleLinear()
-        //   .domain([0, 100])
-        //   .range([0, height]);
-        //
-        // var colors = d3.scaleLinear()
-        //   .domain([0,177])
-        //   .range(['#77b7ea', '#705f7f'])
-
-
-        // var barchart = d3.select("#chart").append("svg")
-        //                  .attr("width", width)
-        //                  .attr("height", height)
-        //                  .append('g')
-        //                  .attr('transform', 'translate('+margin.left+','+margin.top+')')
-        //                  .selectAll('rect')
-        //                  .style('fill', function(d, i){
-        //                    return colors(i);
-        //                  })
-        //                  .data(Object.values(LifebyCountry))
-        //                  .enter().append('rect')
-        //                  .attr('width', xScale.bandwidth())
-        //                  .attr('height', function(d){
-        //                    return yScale(d);
-        //                  })
-        //                  .attr('x', function(d, i){
-        //                    return xScale(i);
-        //                  })
-        //                  .attr('y', function(d){
-        //                    return yScale(d)
-        //                  });
-
-
-
-
-
-
 
     }).catch(function(e){
         throw(e);
