@@ -7,9 +7,6 @@ window.onload = function() {
   Promise.all(requests).then(function(response) {
       var HappyPlanet = response[0];
       var data = response[1];
-      console.log(data);
-      console.log(HappyPlanet);
-
 
       var format = d3.format(",");
 
@@ -59,7 +56,6 @@ window.onload = function() {
         var InequalitybyCountry = {};
 
         HappyPlanet.forEach(function(d) { IndexbyCountry[d.name] = +d.HappyPlanetIndex; });
-        console.log(IndexbyCountry)
         data.features.forEach(function(d) { d.HappyPlanetIndex = IndexbyCountry[d.properties.name] });
         HappyPlanet.forEach(function(d) { LifebyCountry[d.name] = +d.Average_life_exp; });
         data.features.forEach(function(d) { d.Average_life_exp = LifebyCountry[d.properties.name]});
@@ -69,7 +65,7 @@ window.onload = function() {
         data.features.forEach(function(d) { d.Footprint = FootprintbyCountry[d.properties.name]});
         HappyPlanet.forEach(function(d) { InequalitybyCountry[d.name] = +d.Inequality_of_outcomes; });
         data.features.forEach(function(d) { d.Inequality_of_outcomes = InequalitybyCountry[d.properties.name]});
-        console.log(data)
+
 
         svg.append("g")
             .attr("class", "countries")
@@ -84,8 +80,14 @@ window.onload = function() {
             // tooltips
               .style("stroke","white")
               .style('stroke-width', 0.3)
+              .on("click", function(d){
+                var data = [];
+                data.push((d.Average_life_exp/10).toFixed(2), d.Average_wellbeing, d.Footprint);
+                make_barchart(data);
+               })
               .on('mouseover',function(d){
                 tip.show(d);
+
 
                 d3.select(this)
                   .style("opacity", 1)
@@ -109,36 +111,93 @@ window.onload = function() {
 
 
 
+        function make_barchart(data){
+
+          var margin = {top: 20, right: 20, bottom: 30, left: 20};
+          var w = 300;
+          var h = 100;
+
+          var padding = 20;
+
+          var colors = d3.scaleLinear()
+                        .domain([0,data.length])
+                        .range(['#77b7ea', '#705f7f']);
+
+          var tooltip = d3.select("body").append("div")
+                          .style('position','absolute')
+                          .style('background', "rgba(0,0,0,0.6)")
+                          .style('color', "#ffa500")
+                          .style('border','1px #333 solid')
+                          .style('padding', "6px")
+                          .style('font-family', "sans-sherif")
+                          .style('border-radius','3px');
+
+
+          console.log(data)
+          var barchart = d3.select("#chart").append("svg")
+                           .attr("width", w + margin.right + margin.left)
+                           .attr("height", h + margin.top + margin.bottom)
+                           .append('g')
+                           .attr('transform', 'translate('+margin.left+','+margin.top+')')
+                           .selectAll("rect")
+                            .data(data)
+                            .enter()
+                            .append("rect")
+                            .attr("width", w / 3 - 2)
+                            .attr("height", function(d){
+                              return d * 8;
+                            })
+                            .attr("x", function(d, i) {
+                              return i * (w / 3);
+                            })
+                            .attr("y", function(d){
+                              return h - (d *8);
+                            })
+                            .attr("fill", function(d,i) {
+                                return colors(i);
+                            })
+                            // set tooltip for barchart
+                            .on('mouseover', function(d){
+                              tooltip.transition()
+                                .duration(200)
+                                .style('opacity', 0.9)
+                              tooltip.html(d)
+                                .style('left', (d3.event.pageX)+'px')
+                                .style('top', (d3.event.pageY+'px'))
+                              d3.select(this).style('opacity', 0.5)
+                            })
+                            .on('mouseout', function(d){
+                              tooltip.transition()
+                                .duration(500)
+                                .style('opacity', 0)
+                              d3.select(this).style('opacity', 1)
+                            });
+
+
+                  d3.select("#chart")
+                    .on("click", function() {
+
+                      d3.select("#chart > *").remove();
+
+                    })
+
+
+
+
+
+
+        }
+
         };
         var LifebyCountry = {};
         HappyPlanet.forEach(function(d) { LifebyCountry[d.name] = +d.Average_life_exp; });
         data.features.forEach(function(d) { d.Average_life_exp = LifebyCountry[d.properties.name]});
+        console.log(data);
 
-        var w = 1200;
-        var h = 200;
 
-        var barchart = d3.select("#chart").append("svg")
-                         .attr("width", w)
-                         .attr("height", h)
-                         .append('g')
-                         .attr('transform', 'translate('+margin.left+','+margin.top+')')
-                         .selectAll("rect")
-                          .data(Object.values(LifebyCountry))
-                          .enter()
-                          .append("rect")
-                          .attr("width", w / 177 - 1)
-                          .attr("height", function(d){
-                            return d * 2;
-                          })
-                          .attr("x", function(d, i) {
-                            return i * (w / 177);
-                          })
-                          .attr("y", function(d){
-                            return h - (d * 2);
-                          })
-                          .attr("fill", function(d) {
-                              return "rgb(100, 200, " + ((Math.pow(d, 10))/10000000000000000) + ")";
-                          });
+
+
+
 
 
         // var xScale =  d3.scaleBand()
