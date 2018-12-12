@@ -1,172 +1,237 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
+<meta charset='utf-8'>
 <style>
+.bar--positive {
+  fill: #9BCCF5;
+}
 
-  .names {
+.bar--negative {
+  fill: pink;
+}
+
+text {
+  font: 10px sans-serif;
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+}
+
+.axis path,
+.axis line {
   fill: none;
-  stroke: #fff;
-  stroke-linejoin: round;
-  }
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
 
-    /* Tooltip CSS */
-    .d3-tip {
-    line-height: 1.5;
-    font-weight: 400;
-    font-family:"avenir next", Arial, sans-serif;
-    padding: 6px;
-    background: rgba(0, 0, 0, 0.6);
-    color: #FFA500;
-    border-radius: 1px;
-    pointer-events: none;
-    }
-
-    /* Creates a small triangle extender for the tooltip */
-    .d3-tip:after {
-      box-sizing: border-box;
-      display: inline;
-      font-size: 8px;
-      width: 100%;
-      line-height: 1.5;
-      color: rgba(0, 0, 0, 0.6);
-      position: absolute;
-      pointer-events: none;
-
-    }
-
-    /* Northward tooltips */
-    .d3-tip.n:after {
-      content: "\25BC";
-      margin: -1px 0 0 0;
-      top: 100%;
-      left: 0;
-      text-align: center;
-    }
-
-    /* Eastward tooltips */
-    .d3-tip.e:after {
-      content: "\25C0";
-      margin: -4px 0 0 0;
-      top: 50%;
-      left: -8px;
-    }
-
-    /* Southward tooltips */
-    .d3-tip.s:after {
-      content: "\25B2";
-      margin: 0 0 1px 0;
-      top: -8px;
-      left: 0;
-      text-align: center;
-    }
-
-    /* Westward tooltips */
-    .d3-tip.w:after {
-      content: "\25B6";
-      margin: -4px 0 0 -1px;
-      top: 50%;
-      left: 100%;
-    }
-
-/*    text{
-      pointer-events:none;
-    }*/
-
-    .details{
-      color:white;
-    }
-
+.title {
+  font-size: 13px;
+  font-weight:bold;
+}
+.reset { cursor: pointer;}
 </style>
 <body>
-<script src="http://d3js.org/d3.v4.min.js"></script>
-<script src="http://d3js.org/queue.v1.min.js"></script>
-<script src="http://d3js.org/topojson.v1.min.js"></script>
-<script src="d3/d3-tip.js"></script>
+<br />
+<span id='bubble-chart'></span>
+<span id='bar-chart'></span>
+<script src='http://crossfilter.github.io/crossfilter/crossfilter.v1.min.js'></script>
+<script src='https://d3js.org/d3.v3.min.js'></script>
 <script>
-var format = d3.format(",");
+var data = [{"topic":"BMW","age":"18-24","gender":"male","interactions":21600,"key":"BMW","positiveInteractions":21600},{"topic":"BMW","age":"18-24","gender":"female","interactions":-5500,"key":"BMW","positiveInteractions":5500},{"topic":"BMW","age":"25-34","gender":"male","interactions":19500,"key":"BMW","positiveInteractions":19500},{"topic":"BMW","age":"25-34","gender":"female","interactions":-5000,"key":"BMW","positiveInteractions":5000},{"topic":"BMW","age":"35-44","gender":"male","interactions":10700,"key":"BMW","positiveInteractions":10700},{"topic":"BMW","age":"35-44","gender":"female","interactions":-3500,"key":"BMW","positiveInteractions":3500},{"topic":"BMW","age":"45-54","gender":"male","interactions":5700,"key":"BMW","positiveInteractions":5700},{"topic":"BMW","age":"45-54","gender":"female","interactions":-2400,"key":"BMW","positiveInteractions":2400},{"topic":"BMW","age":"55-64","gender":"male","interactions":2500,"key":"BMW","positiveInteractions":2500},{"topic":"BMW","age":"55-64","gender":"female","interactions":-1100,"key":"BMW","positiveInteractions":1100},{"topic":"BMW","age":"65+","gender":"male","interactions":1600,"key":"BMW","positiveInteractions":1600},{"topic":"BMW","age":"65+","gender":"female","interactions":-600,"key":"BMW","positiveInteractions":600},{"topic":"Ford Mustang","age":"18-24","gender":"male","interactions":7600,"key":"Ford Mustang","positiveInteractions":7600},{"topic":"Ford Mustang","age":"18-24","gender":"female","interactions":-800,"key":"Ford Mustang","positiveInteractions":800},{"topic":"Ford Mustang","age":"25-34","gender":"male","interactions":7100,"key":"Ford Mustang","positiveInteractions":7100},{"topic":"Ford Mustang","age":"25-34","gender":"female","interactions":-900,"key":"Ford Mustang","positiveInteractions":900},{"topic":"Ford Mustang","age":"35-44","gender":"male","interactions":5100,"key":"Ford Mustang","positiveInteractions":5100},{"topic":"Ford Mustang","age":"35-44","gender":"female","interactions":-800,"key":"Ford Mustang","positiveInteractions":800},{"topic":"Ford Mustang","age":"45-54","gender":"male","interactions":3500,"key":"Ford Mustang","positiveInteractions":3500},{"topic":"Ford Mustang","age":"45-54","gender":"female","interactions":-600,"key":"Ford Mustang","positiveInteractions":600},{"topic":"Ford Mustang","age":"55-64","gender":"male","interactions":1400,"key":"Ford Mustang","positiveInteractions":1400},{"topic":"Ford Mustang","age":"55-64","gender":"female","interactions":-300,"key":"Ford Mustang","positiveInteractions":300},{"topic":"Ford Mustang","age":"65+","gender":"male","interactions":600,"key":"Ford Mustang","positiveInteractions":600},{"topic":"Ford Mustang","age":"65+","gender":"female","interactions":-200,"key":"Ford Mustang","positiveInteractions":200},{"topic":"Ford Motor Company","age":"25-34","gender":"male","interactions":4300,"key":"Ford Motor Company","positiveInteractions":4300},{"topic":"Ford Motor Company","age":"25-34","gender":"female","interactions":-800,"key":"Ford Motor Company","positiveInteractions":800},{"topic":"Ford Motor Company","age":"18-24","gender":"male","interactions":4200,"key":"Ford Motor Company","positiveInteractions":4200},{"topic":"Ford Motor Company","age":"18-24","gender":"female","interactions":-700,"key":"Ford Motor Company","positiveInteractions":700},{"topic":"Ford Motor Company","age":"35-44","gender":"male","interactions":3000,"key":"Ford Motor Company","positiveInteractions":3000},{"topic":"Ford Motor Company","age":"35-44","gender":"female","interactions":-600,"key":"Ford Motor Company","positiveInteractions":600},{"topic":"Ford Motor Company","age":"45-54","gender":"male","interactions":1800,"key":"Ford Motor Company","positiveInteractions":1800},{"topic":"Ford Motor Company","age":"45-54","gender":"female","interactions":-500,"key":"Ford Motor Company","positiveInteractions":500},{"topic":"Ford Motor Company","age":"55-64","gender":"male","interactions":800,"key":"Ford Motor Company","positiveInteractions":800},{"topic":"Ford Motor Company","age":"55-64","gender":"female","interactions":-300,"key":"Ford Motor Company","positiveInteractions":300},{"topic":"Ford Motor Company","age":"65+","gender":"male","interactions":500,"key":"Ford Motor Company","positiveInteractions":500},{"topic":"Ford Motor Company","age":"65+","gender":"female","interactions":-200,"key":"Ford Motor Company","positiveInteractions":200}];
 
-// Set tooltips
-var tip = d3.tip()
-            .attr('class', 'd3-tip')
-            .offset([-10, 0])
-            .html(function(d) {
-              return "<strong>Country: </strong><span class='details'>" + d.properties.name + "<br></span>" + "<strong>HappyPlanet: </strong><span class='details'>" + format(d.HappyPlanetIndex) +"</span>";
-            })
+var dispatch = d3.dispatch('loadBar', 'loadBubble', 'update');
 
-var margin = {top: 0, right: 0, bottom: 0, left: 0},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+dispatch.on('loadBar', function (dimension, group) {
+  var margin = {top: 0, right: 0, bottom: 40, left: 50},
+    width = 480 - margin.left - margin.right,
+    height = 480 - margin.top - margin.bottom;
 
-var color = d3.scaleThreshold()
-    .domain([10,15,20,25,30,35,40,45,50,55])
-    .range(["rgb(247,251,255)", "rgb(222,235,247)", "rgb(198,219,239)", "rgb(158,202,225)", "rgb(107,174,214)", "rgb(66,146,198)","rgb(33,113,181)","rgb(8,81,156)","rgb(8,48,107)","rgb(3,19,43)"]);
+  var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+  var y = d3.scale.linear().range([height, 0]);
 
-var path = d3.geoPath();
+  var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient('bottom');
 
-var svg = d3.select("body")
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height)
-            .append('g')
-            .attr('class', 'map');
+  var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient('left')
+      .ticks(10);
 
-var projection = d3.geoMercator()
-                   .scale(130)
-                  .translate( [width / 2, height / 1.5]);
+  var t = d3.transition()
+        .duration(750);
 
-var path = d3.geoPath().projection(projection);
+  var click;
 
-svg.call(tip);
+  var svg = d3.select('#bar-chart'),
+        g = svg.select('g');
 
-queue()
-    .defer(d3.json, "Worldmap/world_countries.json")
-    .defer(d3.csv, "DataHappyPlanet.csv")
-    .await(ready);
+  if (g.empty()) {
+    g = svg.append('svg')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-function ready(error, data, HappyPlanet) {
-  var IndexbyCountry = {};
+    g.append('g')
+        .attr('class', 'x axis')
+        .attr('transform', 'translate(0,' + height + ')')
+        .call(xAxis);
 
-  HappyPlanet.forEach(function(d) { IndexbyCountry[d.name] = +d.HappyPlanetIndex; });
-  console.log(IndexbyCountry)
-  data.features.forEach(function(d) { d.HappyPlanetIndex = IndexbyCountry[d.properties.name] });
-  console.log(data)
+    g.append('g')
+        .attr('class', 'y axis')
+        .call(yAxis)
+      .append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', 6)
+        .attr('dy', '.71em')
+        .style('text-anchor', 'end')
+        .text('Interactions');
 
-  svg.append("g")
-      .attr("class", "countries")
-    .selectAll("path")
-      .data(data.features)
-    .enter().append("path")
-      .attr("d", path)
-      .style("fill", function(d) { return color(IndexbyCountry[d.properties.name]); })
-      .style('stroke', 'white')
-      .style('stroke-width', 1.5)
-      .style("opacity",0.8)
-      // tooltips
-        .style("stroke","white")
-        .style('stroke-width', 0.3)
-        .on('mouseover',function(d){
-          tip.show(d);
+    var reset = g.append('text')
+      .attr('class', 'reset')
+      .attr('y', 10)
+      .attr('x', 20)
+      .style('display', 'none')
+      .text('reset')
+      .on('click', function () { dimension.filter(null); dispatch.update(); reset.style('display', 'none') })
+  }
 
-          d3.select(this)
-            .style("opacity", 1)
-            .style("stroke","white")
-            .style("stroke-width",3);
+  dispatch.on('update.bar', function () {
+    x.domain(group.all().map(function(d) { return d.key; }));
+    y.domain([0, d3.max(group.all(), function(d) { return d.value; })]);
+
+    g.select('.y.axis')
+      .transition(t)
+       .call(yAxis)
+
+    g.select('.x.axis')
+     .transition(t)
+      .call(xAxis)
+
+    var rects = g.selectAll('rect')
+        .data(group.all());
+
+    rects.enter().append('rect');
+
+    rects
+        .on('click', function (d) { dimension.filter(d.key); dispatch.update(); reset.style('display', 'block') })
+      .transition(t)
+        .attr('class', function(d) { return 'bar bar--' + (d.key == 'female' ? 'negative' : 'positive'); })
+        .attr('x', function(d) { return x(d.key); })
+        .attr('width', x.rangeBand())
+        .attr('y', function(d) { return y(d.value); })
+        .attr('height', function(d) { return height - y(d.value); })
+
+    var texts = g.selectAll('.label')
+        .data(group.all())
+
+    texts.enter().append('text').attr('class', 'label')
+
+    texts
+      .transition(t)
+        .attr('text-anchor', 'middle')
+        .attr('x', function(d,i) {
+            return x(d.key) + (x.rangeBand() / 2);
         })
-        .on('mouseout', function(d){
-          tip.hide(d);
+        .attr('y', function(d,i) {
+            return y(d.value) + ((height - y(d.value)) / 2);
+        })
+        .attr('dy', '.35em')
+        .text(function (d) { return d.value })
+  })
 
-          d3.select(this)
-            .style("opacity", 0.8)
-            .style("stroke","white")
-            .style("stroke-width",0.3);
-        });
+})
 
-  svg.append("path")
-      .datum(topojson.mesh(data.features, function(a, b) { return a.name !== b.name; }))
-       // .datum(topojson.mesh(data.features, function(a, b) { return a !== b; }))
-      .attr("class", "names")
-      .attr("d", path);
-}
+dispatch.on('loadBubble', function (dimension, group) {
+  var margin = {top: 0, right: 0, bottom: 0, left: 0},
+    diameter = 460 - margin.left - margin.right;
+
+  var onClick;
+
+  var color = d3.scale.category10();
+
+  var bubble = d3.layout.pack()
+    .sort(null)
+    .size([diameter, diameter])
+    .padding(1.5);
+
+  var t = d3.transition()
+      .duration(750);
+
+  var svg = d3.select('#bubble-chart'),
+        g = svg.select('g');
+
+  if (!svg.empty()) {
+    svg.select('svg').remove()
+  }
+
+  g = svg.append('svg')
+      .attr('width', diameter + margin.left + margin.right)
+      .attr('height', 480 + margin.top + margin.bottom)
+      .attr('class', 'bubble')
+    .append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+
+  var reset = g.append('text')
+    .attr('class', 'reset')
+    .style('display', 'none')
+    .attr('y', 10)
+    .attr('x', 20)
+    .text('reset')
+    .on('click', function () { dimension.filter(null); dispatch.update(); reset.style('display', 'none') })
+
+  var node = g.selectAll('.node')
+    .data(bubble.nodes({ children: group.all() }).filter(function(d) { return !d.children; }))
+
+  node.enter().append('g')
+    .attr('class', 'node')
+    .attr('transform', function(d) {return 'translate(' + d.x + ',' + d.y + ')'; });
+
+  node.append('title')
+    .text(function(d) { return d.key; });
+
+  node.append('circle')
+    .attr('r', function(d) { return d.r; })
+    .style('fill', function(d) { return color(d.key); })
+
+  node.append('text')
+    .attr('dy', '.3em')
+    .style('text-anchor', 'middle')
+    .text(function(d) { return d.key + ' - ' + d.value; });
+
+  dispatch.on('update.bubble', function () {
+    var reset = g.selectAll('.reset')
+
+    node = g.selectAll('.node')
+      .data(bubble.nodes({ children: group.all() }).filter(function(d) { return !d.children; }))
+
+    node
+      .attr('class', 'node')
+      .transition(t)
+      .attr('transform', function(d) {return 'translate(' + d.x + ',' + d.y + ')'; });
+
+    node.select('circle')
+      .on('click', function (d) { dimension.filter(d.key); dispatch.update(); reset.style('display', 'block') })
+      .transition(t)
+      .attr('r', function(d) { return d.r; })
+      .style('fill', function(d) { return color(d.key); })
+
+    node.select('text')
+      .attr('dy', '.3em')
+      .style('text-anchor', 'middle')
+      .text(function(d) { if (d.value) return d.key + ' - ' + d.value; });
+
+  })
+})
+
+var xf = crossfilter(data)
+
+var gender = xf.dimension(function (d) { return d.gender; }),
+    genders = gender.group().reduceSum(function (d) { return d.positiveInteractions; }),
+    topic = xf.dimension(function (d) { return d.topic }),
+    topics = topic.group().reduceSum(function (d) { return d.positiveInteractions; })
+
+dispatch.loadBar(gender, genders);
+dispatch.loadBubble(topic, topics);
+dispatch.update();
 
 </script>
 </body>
-</html>
