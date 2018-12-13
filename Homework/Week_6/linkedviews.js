@@ -91,8 +91,8 @@ window.onload = function() {
                 if (d.Average_life_exp === undefined){
                   console.log("nope");
                   var empty = d3.select("#chart").append("svg")
-                                   .attr("width", 300 + 20 + 20)
-                                   .attr("height", 100 + 20 + 30);
+                                   .attr("width", 200)
+                                   .attr("height", 100);
                   empty.append("text")
                       .attr("x", 60)
                       .attr("y", 45)
@@ -102,8 +102,8 @@ window.onload = function() {
                       .style("font-weight", "bold")
                       .text(d.properties.name)
                   empty.append("text")
-                       .attr("x", 60)
-                       .attr("y", 80)
+                       .attr("x", 10)
+                       .attr("y", 70)
                        .style("font-size", "16px")
                        .style("font-weight", "bold")
                        .style("fill", "darkOrange")
@@ -139,15 +139,23 @@ window.onload = function() {
 
         function make_barchart(data){
 
-          var margin = {top: 20, right: 20, bottom: 30, left: 20};
-          var w = 300;
-          var h = 100;
+          // set display margins
+          var margin = {
+            top: 20,
+            right: 20,
+            bottom: 100,
+            left: 20
+          }
+
+          // set height and width of chart
+          var h = 300 - margin.top - margin.bottom;
+          var w = 250 - margin.right - margin.left;
 
           var padding = 20;
 
           var colors = d3.scaleLinear()
                         .domain([0, 3])
-                        .range(['#77b7ea', '#705f7f']);
+                        .range(['#FCC90A', '#D50000']);
 
           var tooltip = d3.select("body").append("div")
                           .style('position','absolute')
@@ -158,62 +166,92 @@ window.onload = function() {
                           .style('font-family', "sans-sherif")
                           .style('border-radius','3px');
 
+          // specify scales
+          var yScale = d3.scaleLinear()
+            .domain([0, 10])
+            // .domain(d3.extent(data, function(d) {return d.value}))
+            .range([h + margin.top, margin.top]);
 
-          console.log(data)
+          console.log(d3.extent(data, function(d) {return d.value}))
+
+          var xScale =  d3.scaleBand()
+            .domain(d3.range(0, 3))
+            .range([margin.right, w])
+
+
           var barchart = d3.select("#chart").append("svg")
                            .attr("width", w + margin.right + margin.left)
                            .attr("height", h + margin.top + margin.bottom);
 
-              barchart.append('g')
-                       .attr('transform', 'translate('+margin.left+','+margin.top+')')
-                       .selectAll("rect")
-                        .data(data)
-                        .enter()
-                        .append("rect")
-                        .attr("width", w / 3 - 2)
-                        .attr("height", function(d){
-                          return d.value * 10;
-                        })
-                        .attr("x", function(d, i) {
-                          return i * (w / 3);
-                        })
-                        .attr("y", function(d){
-                          return h - (d.value *10);
-                        })
-                        .attr("fill", function(d,i) {
-                            return colors(i);
-                        })
-                        // set tooltip for barchart
-                        .on('mouseover', function(d){
-                          tooltip.transition()
-                            .duration(200)
-                            .style('opacity', 0.9)
-                          tooltip.html(d.value)
-                            .style('left', (d3.event.pageX)+'px')
-                            .style('top', (d3.event.pageY+'px'))
-                          d3.select(this).style('opacity', 0.5)
-                        })
-                        .on('mouseout', function(d){
-                          tooltip.transition()
-                            .duration(500)
-                            .style('opacity', 0)
-                          d3.select(this).style('opacity', 1)
-                        });
-
-                barchart.append("text")
+            barchart.append('g')
+                     // .attr('transform', 'translate('+margin.left+','+margin.top+')')
+                     .selectAll("rect")
                       .data(data)
-                      .attr("x", 60)
-                      .attr("y", 35)
-                      .attr("text-anchor", "middle")
-                      .style("font-family", "sans-sherif")
-                      .style("font-size", "20px")
-                      .style("font-weight", "bold")
-                      .text(function(d){
-                        return d.name;
+                      .enter()
+                      .append("rect")
+                      .attr("width", w / 4 + 1)
+                      .attr("height",function(d) { return h - yScale(d.value); })
+                      .attr("x",function(d,i) { return xScale(i); })
+                      .attr("y",function(d) { return yScale(d.value); })
+                      .attr("fill", function(d,i) {
+                          return colors(i);
+                      })
+                      .attr("fill-opacity", 0.7)
+                      // set tooltip for barchart
+                      .on('mouseover', function(d){
+                        tooltip.transition()
+                          .duration(200)
+                          .style('opacity', 0.9)
+                        tooltip.html(d.value)
+                          .style('left', (d3.event.pageX)+'px')
+                          .style('top', (d3.event.pageY+'px'))
+                        d3.select(this).style('opacity', 0.5)
+                      })
+                      .on('mouseout', function(d){
+                        tooltip.transition()
+                          .duration(500)
+                          .style('opacity', 0)
+                        d3.select(this).style('opacity', 1)
                       });
-      }
 
-        };
+              var hScale =  d3.scaleBand()
+                .domain(["Life expectancy (x10)", "Wellbeing", "Footprint"])
+                .range([margin.right, w])
+
+              barchart.append("g")
+              .attr("class", "axis")
+              .attr("transform", "translate(0," + h + ")")
+              .call(d3.axisBottom(hScale).ticks(3))
+              .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate(-65)");
+
+              barchart.append("text")
+                    .data(data)
+                    .attr("x", 60)
+                    .attr("y", 35)
+                    .attr("text-anchor", "middle")
+                    .style("font-family", "sans-sherif")
+                    .style("font-size", "20px")
+                    .style("font-weight", "bold")
+                    .text(function(d){
+                      return d.name;
+                    });
+                  };
+
+            //click on Visualisation load page again
+            d3.selectAll(".m").on("click", function() {
+              location.href = "linkedviews.html";
+            });
+
+            // make new html page
+            d3.selectAll(".s").on("click", function () {
+              location.href = "story.html";
+        });
+
+        }
 
     }).catch(function(e){
         throw(e);

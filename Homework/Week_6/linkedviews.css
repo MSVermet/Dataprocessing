@@ -1,0 +1,161 @@
+/* Matty Vermet, 11320524
+   Minor Programeren 2018
+   Dataprocessing*/
+h1 {
+  color: grey;
+}
+h3 {
+    margin-top: 15px;
+}
+.country-name {
+    margin: 0 ;
+}
+
+.key-dot {
+    display: inline-block;
+    height: 15px;
+    margin-right: .5em;
+    width: 15px;
+}
+
+.legend1 {
+    margin-right:10px;
+    margin-left:30px;
+    margin-bottom: 80px;
+    position: relative;
+}
+
+
+.queens { background: rgb(247,251,255);}
+.kings { background: rgb(222,235,247);}
+.bronx { background: rgb(198,219,239);}
+.a { background: rgb(158,202,225);}
+.b { background: rgb(107,174,214);}
+.c { background: rgb(66,146,198);}
+.d { background: rgb(33,113,181);}
+.e { background: rgb(8,81,156);}
+.f { background: rgb(8,48,107);}
+.g { background: rgb(3,19,43);}
+.nan { background: #0d1822;}
+}
+
+  .names {
+  fill: none;
+  stroke: #fff;
+  stroke-linejoin: round;
+  }
+
+    /* Tooltip CSS */
+    .d3-tip {
+    line-height: 1.5;
+    font-weight: 400;
+    font-family:"avenir next", Arial, sans-serif;
+    padding: 6px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #FFA500;
+    border-radius: 1px;
+    pointer-events: none;
+    }
+
+    /* Creates a small triangle extender for the tooltip */
+    .d3-tip:after {
+      box-sizing: border-box;
+      display: inline;
+      font-size: 8px;
+      width: 100%;
+      line-height: 1.5;
+      color: rgba(0, 0, 0, 0.6);
+      position: absolute;
+      pointer-events: none;
+
+    }
+
+    /* Northward tooltips */
+    .d3-tip.n:after {
+      content: "\25BC";
+      margin: -1px 0 0 0;
+      top: 100%;
+      left: 0;
+      text-align: center;
+    }
+
+    /* Eastward tooltips */
+    .d3-tip.e:after {
+      content: "\25C0";
+      margin: -4px 0 0 0;
+      top: 50%;
+      left: -8px;
+    }
+
+    /* Southward tooltips */
+    .d3-tip.s:after {
+      content: "\25B2";
+      margin: 0 0 1px 0;
+      top: -8px;
+      left: 0;
+      text-align: center;
+    }
+
+    /* Westward tooltips */
+    .d3-tip.w:after {
+      content: "\25B6";
+      margin: -4px 0 0 -1px;
+      top: 50%;
+      left: 100%;
+    }
+
+/*    text{
+      pointer-events:none;
+    }*/
+
+    .details{
+      color:white;
+    }
+    .dropbtn {
+        background-color: #e5edf9;
+        color: black;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+    }
+
+    .dropdown{
+      float: right;
+      position: relative;
+      margin-right: 5em;
+      display: inline-block;
+    }
+
+    .dropdown-content{
+      display: none;
+      position: absolute;
+      background-color: #f1f1f1;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    .dropdown-content a{
+      color: black;
+      padding:12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {background-color: #ddd}
+
+    .dropdown:hover .dropdown-content {display: block;}
+
+    .dropdown:hover .dropbtn {background-color: lightsteelblue;}
+
+    .text {
+      background-color: #d3e0e2;
+      height: 300px;
+      width: 70%;
+      color: black;
+      border-style: dotted;
+      border-width: 5px;
+      border-color: #169eba;
+      margin-left: 200px;
+      margin-top: 150px;
+    }
