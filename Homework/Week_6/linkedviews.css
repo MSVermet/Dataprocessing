@@ -150,7 +150,7 @@ h3 {
 
     .text {
       background-color: #d3e0e2;
-      height: 300px;
+      height: 250px;
       width: 70%;
       color: black;
       border-style: dotted;
@@ -158,4 +158,16 @@ h3 {
       border-color: #169eba;
       margin-left: 200px;
       margin-top: 150px;
+    }
+
+    .text2 {
+      background-color: #d3e0e2;
+      height: 230px;
+      width: 70%;
+      color: black;
+      border-style: dotted;
+      border-width: 5px;
+      border-color: #169eba;
+      margin-left: 200px;
+      margin-top: 70px;
     }
