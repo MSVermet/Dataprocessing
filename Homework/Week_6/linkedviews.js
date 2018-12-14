@@ -280,7 +280,7 @@ window.onload = function() {
 
           //click on Visualisation load page again
           d3.selectAll(".m").on("click", function() {
-            location.href = "linkedviews.html";
+            location.href = "https://msvermet.github.io/Dataprocessing/Homework/Week_6/linkedviews.html";
           });
 
           // go to new html page
