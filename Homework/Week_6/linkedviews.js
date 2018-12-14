@@ -285,7 +285,7 @@ window.onload = function() {
 
           // go to new html page
           d3.selectAll(".s").on("click", function () {
-            location.href = "story.html";
+            location.href = "https://msvermet.github.io/Dataprocessing/Homework/Week_6/story.html";
       });
 
     }
